@@ -6,7 +6,6 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.3%2B-000000.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Dataset: APTOS 2019](https://img.shields.io/badge/Dataset-APTOS_2019-brightgreen.svg?logo=kaggle&logoColor=white)](https://www.kaggle.com/c/aptos2019-blindness-detection)
 [![Test Accuracy](https://img.shields.io/badge/Held--Out_Test_Accuracy-86.62%25-success.svg)](#-evaluation-results)
 [![Weighted Kappa](https://img.shields.io/badge/Quadratic_Weighted_Kappa-0.8780-blueviolet.svg)](#-evaluation-results)
@@ -189,7 +188,6 @@ RetinaVision-AI/
 │   └── test_class_focus.py         # Unit tests for class attention focus
 ├── .gitattributes                  # Git line-ending & binary rules
 ├── .gitignore                      # Git ignore rules (>100MB checkpoints, temp files)
-├── LICENSE                         # MIT License
 ├── README.md                       # Main project documentation
 ├── RetinaVision_Colab.ipynb        # Complete Google Colab / Kaggle GPU notebook
 ├── app.py                          # Flask web server & inference API
@@ -273,23 +271,3 @@ python src/evaluate.py --checkpoint checkpoints/best_model_accuracy_RECOVERED.pt
 
 *NPDR: Non-Proliferative Diabetic Retinopathy; IRMA: Intraretinal Microvascular Abnormalities.*
 
----
-
-## 📜 Citation & Academic Use
-
-If you use this codebase or methodology in your academic research, please cite:
-
-```bibtex
-@article{retinavision2026,
-  title   = {Automated Diabetic Retinopathy Staging Using Dual-Attention ResNet50 and EfficientNet-B0 Ensemble with Grad-CAM Explainability},
-  author  = {Paarkavi, M. R. and Manju, V.},
-  journal = {Research Project Report & Conference Proceedings},
-  year    = {2026}
-}
-```
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE) - feel free to use and adapt it for research and educational purposes.

@@ -1,0 +1,83 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions
+*.obj
+*.o
+*.pyd
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyTorch Checkpoints & Large Model Weights (>100MB blocked by GitHub)
+*.pth
+*.pt
+*.bin
+*.onnx
+*.engine
+!checkpoints/.gitkeep
+!checkpoints/README.md
+
+# Large Raw Datasets & Archive Files
+data/raw/
+data/split/
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+!data/.gitkeep
+!data/README.md
+!data/samples/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Environments & Virtual Envs
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Scratch and Temporary Files
+scratch/
+temp/
+*.tmp
+*.log

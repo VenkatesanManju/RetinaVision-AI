@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetinaVision AI</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-badge">&#128065;</div>
+    <div>
+      <h1>RetinaVision AI</h1>
+      <p class="subtitle">ResNet50 + EfficientNet-B0 Ensemble</p>
+    </div>
+  </div>
+  <div class="status-pill"><span class="dot"></span> <span id="server-status">Checking server...</span></div>
+</div>
+
+<div class="main-grid">
+
+  <!-- Upload panel -->
+  <div class="panel">
+    <h2>&#9723; Upload Fundus Image</h2>
+    <p class="panel-subtext">Select or drag &amp; drop a fundus image (224&times;224 recommended)</p>
+
+    <label class="dropzone" id="dropzone">
+      <img id="preview-img" class="preview-img hidden" alt="preview">
+      <button id="preview-close" class="preview-close hidden">✕</button>
+      <div id="dropzone-placeholder" class="dropzone-placeholder">
+        <div class="upload-icon">&#8593;</div>
+        <p>Click or drag &amp; drop an image here</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" hidden>
+    </label>
+
+    <button id="run-btn" class="primary-btn" disabled>&#9889; Run Ensemble Classification</button>
+    <label class="model-choice" for="checkpoint-select">Checkpoint</label>
+    <select id="checkpoint-select" class="checkpoint-select">
+      <option value="accuracy" selected>Verified accuracy checkpoint (86.62% test)</option>
+    </select>
+  </div>
+
+  <!-- Results panel -->
+  <div class="panel">
+    <h2>&#9689; Diagnostic Results &amp; Grad-CAM</h2>
+    <p class="panel-subtext">Real-time CNN prediction with visual attention heatmaps</p>
+
+    <div id="results-empty" class="results-empty">
+      Upload an image and click "Run Dual Attention Classification" to see results.
+    </div>
+
+    <div id="results-content" class="hidden">
+      <div class="prediction-row">
+        <div class="prediction-card">
+          <p class="label-small">PREDICTED STAGE</p>
+          <h3 id="predicted-stage">-</h3>
+          <p id="predicted-desc" class="desc-text">-</p>
+        </div>
+        <div class="confidence-card">
+          <div class="confidence-chip">
+            <p id="confidence-value" class="confidence-value">-</p>
+            <p class="label-small">CONFIDENCE SCORE</p>
+          </div>
+        </div>
+      </div>
+      <p id="model-accuracy" class="panel-subtext"></p>
+      <p id="model-kappa" class="panel-subtext"></p>
+      <p id="model-priority" class="priority-note">This model prioritizes Severe and Proliferate_DR detection.</p>
+      <p id="branch-accuracies" class="panel-subtext"></p>
+
+      <div class="image-row">
+        <div class="image-col">
+          <p class="label-small centered">INPUT RETINA IMAGE</p>
+          <img id="input-image" class="result-img" alt="input">
+        </div>
+        <div class="image-col">
+          <p class="label-small centered accent">GRAD-CAM HEATMAP</p>
+          <img id="gradcam-image" class="result-img" alt="gradcam">
+        </div>
+      </div>
+
+      <div class="probs-section">
+        <p class="label-small">&#8801; Class Probabilities Breakdown</p>
+        <div id="probs-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  ResNet50 + EfficientNet-B0 Ensemble &bull; Trained on Kaggle Gaussian Filtered Dataset (224&times;224)
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

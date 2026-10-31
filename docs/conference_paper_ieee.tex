@@ -1,0 +1,183 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{url}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{RetinaVision AI: Dual Attention-Enhanced CNN Ensemble for Explainable Diabetic Retinopathy Classification}
+
+\author{
+\IEEEauthorblockN{Anonymous Authors}
+\IEEEauthorblockA{Department of Computer Science and Engineering\\
+University / Institution Name\\
+Email: author@university.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+Diabetic retinopathy (DR) is a leading cause of preventable blindness worldwide, and timely grading is essential for effective clinical intervention. This paper presents RetinaVision AI, an explainable five-class DR classification framework that combines a dual-attention ResNet50 branch with an EfficientNet-B0 branch in an ensemble architecture. The system is trained on a stratified retinal fundus dataset and incorporates Grad-CAM to provide visual explanations of the model's decisions. The final pipeline includes preprocessing, training, checkpointing, held-out evaluation, and an interactive Flask-based inference interface. Experimental evaluation on 553 retained test images achieved an overall accuracy of 86.62\%, macro precision of 77.07\%, macro recall of 71.45\%, and macro F1-score of 73.43\%. The project demonstrates a practical end-to-end research prototype for early-stage DR detection while also highlighting remaining challenges in minority-class recognition and clinical deployment.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Diabetic retinopathy, medical image classification, deep learning, ResNet50, EfficientNet, attention mechanism, explainable AI, Grad-CAM.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Diabetic retinopathy is a progressive microvascular complication of diabetes that damages the retinal vasculature and can lead to irreversible vision loss if not detected early. Automated grading systems can assist clinicians by identifying disease severity from fundus images, but the task remains difficult because lesion patterns vary across stages and the dataset is often imbalanced. The five-class grading problem is particularly challenging because early-stage disease is subtle, while severe and proliferative stages can exhibit highly heterogeneous visual features.
+
+Recent advances in deep learning have shown that convolutional neural networks (CNNs) can achieve strong performance in medical image classification tasks. However, many systems focus only on prediction accuracy and do not provide interpretable outputs, which limits clinical trust and debugging capability. In addition, class imbalance remains a major challenge in retinal datasets, where normal and moderate examples dominate while mild, severe, and proliferative cases are relatively scarce.
+
+This paper introduces RetinaVision AI, a dual attention-enhanced ensemble model for five-stage DR classification. The framework combines ResNet50 and EfficientNet-B0 backbones, integrates channel and spatial attention mechanisms, and applies Grad-CAM to produce visually interpretable explanations for predictions. The full system includes a robust preprocessing pipeline, stratified dataset splitting, training with class-aware loss functions, validation-based checkpoint selection, and a web-based inference interface for real-world demonstration and testing.
+
+The contributions of this work are threefold. First, we design an ensemble architecture that fuses complementary CNN feature representations for improved disease grading. Second, we incorporate dual attention to guide the network toward clinically relevant retinal regions. Third, we provide a complete end-to-end project pipeline that supports training, evaluation, and explainable inference in a reproducible research-ready manner.
+
+\section{Related Work}
+Deep learning methods have been widely applied to diabetic retinopathy screening and grading. Early studies relied on handcrafted features and classical machine learning, but modern approaches are dominated by CNN-based architectures. Standard architectures such as ResNet and EfficientNet have demonstrated strong generalization in medical imaging tasks because they capture hierarchical spatial features and support transfer learning from large-scale natural-image datasets.
+
+Attention mechanisms have also been used to improve network focus on clinically relevant lesions. Channel attention models weight feature channels according to their importance, while spatial attention highlights informative retinal regions. These mechanisms can be especially useful for DR grading, where early lesions are small and can be easily overlooked by a global classifier.
+
+Explainable AI methods such as Grad-CAM provide a practical approach for visual interpretation by highlighting image regions that influence the selected class score. In medical imaging, this is valuable for human-in-the-loop review and model diagnosis. This project integrates these ideas into a complete DR classification workflow and evaluates the model on a held-out test split to provide transparent performance reporting.
+
+\section{Dataset and Preprocessing}
+The project uses a five-class retinal fundus dataset derived from Kaggle Gaussian-filtered diabetic retinopathy images. The classes are: No DR, Mild DR, Moderate DR, Severe DR, and Proliferative DR. Each image is resized to $224 \times 224$ pixels, converted to RGB format, and normalized using ImageNet statistics. A fixed stratified split is used to preserve class distribution across training, validation, and test partitions.
+
+The dataset distribution used in the project is summarized in Table~\ref{tab:data}. The final split contains 2,562 training images, 546 validation images, and 553 test images.
+
+\begin{table}[t]
+\centering
+\caption{Dataset distribution used for training, validation, and testing.}
+\label{tab:data}
+\begin{tabular}{lccc}
+\toprule
+Class & Train & Validation & Test \\
+\midrule
+No DR & 1263 & 270 & 272 \\
+Mild & 259 & 55 & 56 \\
+Moderate & 699 & 149 & 151 \\
+Severe & 135 & 28 & 30 \\
+Proliferative DR & 206 & 44 & 44 \\
+\midrule
+Total & 2562 & 546 & 553 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Training preprocessing includes random rotation, horizontal and vertical flipping, random resized crop, and brightness/contrast jitter. Validation and test preprocessing are deterministic to ensure consistent evaluation. The design preserves image quality while reducing overfitting and enabling a stable comparison across epochs.
+
+\section{Proposed Method}
+\subsection{Model Architecture}
+The proposed model is a two-branch ensemble classifier. The first branch is a ResNet50 backbone enhanced with dual attention modules, and the second is an EfficientNet-B0 backbone. Both models produce five-class logits, which are converted to probabilities and merged using a weighted ensemble strategy. Based on the project configuration, the ResNet50 branch contributes a weight of 0.7 and the EfficientNet-B0 branch contributes 0.3.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{retinavision_app_interface.png}
+    \caption{RetinaVision AI inference interface showing the uploaded retinal fundus image, predicted diabetic retinopathy stage, confidence score, probability breakdown, and Grad-CAM explanation overlay.}
+    \label{fig:interface}
+\end{figure}
+
+The ResNet branch includes a channel attention block followed by a spatial attention block. This sequential structure enables the network to recalibrate informative feature channels and emphasize medically relevant retinal regions. The attention-refined feature maps pass through a classification head with batch normalization, ReLU, global average pooling, and a final fully connected classifier.
+
+\subsection{Loss Function and Training Strategy}
+The project uses a class-aware focal loss function to address the imbalance between healthy and diseased classes. Focal loss reduces the dominance of well-classified majority samples and increases the contribution of difficult minority-class examples, which is important for early DR detection. The training process uses AdamW optimization, a ReduceLROnPlateau schedule, gradient clipping, and early stopping based on validation performance.
+
+Checkpoint selection is performed using validation-based metrics to save the best-performing model state. The system tracks accuracy, recall, and kappa-related indicators to support clinically relevant model selection rather than relying solely on aggregate accuracy.
+
+\subsection{Explainability}
+To support interpretable inference, Grad-CAM is applied to the attention-enhanced feature path of the ResNet50 model. The resulting heatmap identifies the retinal regions that most strongly influence the predicted class. This transparency is useful for qualitative review, failure analysis, and human-in-the-loop validation. However, the outputs should be interpreted as model explanations rather than definitive clinical localization evidence.
+
+\section{Experimental Setup}
+The experimental pipeline consists of four stages: dataset preparation, model training, checkpoint verification, and held-out evaluation. A fixed stratified split is used to preserve class balance. The model is trained on the training set, monitored on the validation set, and evaluated on the separate test set.
+
+The reported results correspond to the verified accuracy checkpoint selected during validation. For this checkpoint, the validation accuracy is 83.70\% and the validation weighted kappa is 0.8780. The independent held-out evaluation is performed on the test split and is therefore reported separately to avoid conflating validation performance with final test performance.
+
+\section{Results}
+The generated test results from the verified checkpoint are summarized in Table~\ref{tab:aggregate}. The model achieved an overall accuracy of 86.62\% on 553 held-out test images, with a macro precision of 77.07\%, macro recall of 71.45\%, and macro F1-score of 73.43\%.
+
+\begin{table}[t]
+\centering
+\caption{Aggregate performance metrics on the held-out test set.}
+\label{tab:aggregate}
+\begin{tabular}{lc}
+\toprule
+Metric & Result \\
+\midrule
+Accuracy & 86.62\% \\
+Macro precision & 77.07\% \\
+Macro recall & 71.45\% \\
+Macro F1-score & 73.43\% \\
+Weighted precision & 85.98\% \\
+Weighted recall & 86.62\% \\
+Weighted F1-score & 86.01\% \\
+Support & 553 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The per-class performance is reported in Table~\ref{tab:perclass}. The strongest recall was observed for No DR and Moderate DR. Mild DR and Proliferative DR were recognized with moderate performance, while Severe DR remained the most difficult class, reflecting both the class imbalance and the visual similarity of adjacent retinal stages.
+
+\begin{table}[t]
+\centering
+\caption{Per-class classification performance on the held-out test set.}
+\label{tab:perclass}
+\begin{tabular}{lcccc}
+\toprule
+Class & Precision & Recall & F1-score & Support \\
+\midrule
+No DR & 97.10\% & 98.53\% & 97.81\% & 272 \\
+Mild & 77.78\% & 75.00\% & 76.36\% & 56 \\
+Moderate & 77.98\% & 86.75\% & 82.13\% & 151 \\
+Severe & 58.82\% & 33.33\% & 42.55\% & 30 \\
+Proliferative DR & 73.68\% & 63.64\% & 68.29\% & 44 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The model comparison also indicates that the ensemble outperforms each individual branch under the same evaluation setup. The ResNet50 branch achieved 85.90\% accuracy, the EfficientNet-B0 branch achieved 77.40\%, and the fused ensemble achieved 86.62\%. This suggests that the complementary features from both backbones improve classification robustness on the retained test split.
+
+\section{Discussion}
+The experimental results show that the proposed architecture is competitive for five-class DR classification using retinal fundus images. The high overall accuracy demonstrates that the ensemble model can separate the major disease stages effectively, while the macro-recall values reveal that performance is not uniform across all classes. This distinction is important, because medical datasets are often imbalanced and overall accuracy can mask underperformance on minority classes.
+
+The lower recall for Severe DR is consistent with the inherent challenge of this class. Severe and proliferative stages may display overlapping features, and the number of severe examples is limited. This indicates that further improvements in data sampling, augmentation, and calibration are necessary before the system can be considered highly reliable for clinical deployment. In addition, although Grad-CAM is useful for interpretability, it is still a qualitative explanatory tool and should not be interpreted as a clinical proof of lesion localization.
+
+The end-to-end project also includes a Flask-based web application that loads the trained checkpoint, accepts uploaded retinal images, and returns predicted disease stage, confidence, probability breakdown, and Grad-CAM overlays. This makes the system useful for research demonstrations, interactive validation, and exploratory assessments, while remaining clearly positioned as a research prototype rather than a certified medical diagnostic device.
+
+\section{Conclusion}
+This paper presents RetinaVision AI, a dual attention-enhanced ResNet50 and EfficientNet-B0 ensemble for explainable diabetic retinopathy classification. The model is trained and evaluated on a stratified five-class retinal fundus dataset and incorporates Grad-CAM for visual explanation. The verified checkpoint achieved 86.62\% test accuracy on 553 held-out images, demonstrating strong performance on the overall classification task while also highlighting the ongoing difficulty of minority-class recognition.
+
+The project contributes a complete and reproducible pipeline for medical image analysis, spanning dataset preparation, training, checkpointing, evaluation, explainability, and web-based inference. Although the results are promising, future work should focus on external dataset validation, class-balancing strategies, and clinical-level verification before any clinical deployment claim is made.
+
+\section*{Acknowledgment}
+The authors acknowledge the public retinal image dataset and the open-source software libraries used in the implementation of this project. The reported results are based on the verified checkpoint and held-out evaluation artifacts generated during the project workflow.
+
+\begin{thebibliography}{99}
+\bibitem{gulshan2016}
+V. Gulshan, L. Peng, M. Coram, M. C. Stumpe, D. Wu, A. Narayanaswamy, S. Venugopalan, K. Widner, T. Madams, J. Cuadros, R. Kim, R. Raman, P. C. Nelson, J. L. Mega, and D. R. Webster, ``Development and validation of a deep learning algorithm for detection of diabetic retinopathy in retinal fundus photographs,'' \emph{Jama}, vol. 316, no. 22, pp. 2402--2410, 2016.
+
+\bibitem{quellec2017}
+G. Quellec, M. Lamard, P. Josselin, M. D. Abr\`amo, C. Cazuguel, B. Cochener, and G. Cazuguel, ``Deep learning for diabetic retinopathy screening,'' \emph{Medical Image Analysis}, vol. 39, pp. 30--42, 2017.
+
+\bibitem{he2016}
+K. He, X. Zhang, S. Ren, and J. Sun, ``Deep residual learning for image recognition,'' in \emph{Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR)}, 2016, pp. 770--778.
+
+\bibitem{tan2019}
+M. Tan and Q. Le, ``EfficientNet: Rethinking model scaling for convolutional neural networks,'' in \emph{Proc. International Conference on Machine Learning (ICML)}, 2019.
+
+\bibitem{selvaraju2017}
+R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra, ``Grad-CAM: Visual explanations from deep networks via gradient-based localization,'' in \emph{Proc. IEEE International Conference on Computer Vision (ICCV)}, 2017, pp. 618--626.
+\end{thebibliography}
+
+\end{document}
